@@ -2,6 +2,7 @@ import datetime
 import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
     
 def validate_data(sym: str, data: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
@@ -76,15 +77,19 @@ def validate_data(sym: str, data: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     return data, report
 
 def plot_close(data, sym):
-    plt.figure(figsize=(12, 6))
-    plt.plot(data.index, data["Close"], label=f"{sym} Close Price")
-    plt.title(f'{sym} Close Price over Time')
-    plt.xlabel('Date')
-    plt.ylabel('Price($)')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+    os.makedirs("./reports/figures", exist_ok=True)
 
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(data.index, data["Close"], label=f"{sym} Close Price")
+    ax.set_title(f"{sym} Close Price over Time")
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Price ($)")
+    ax.legend()
+    ax.grid(True)
+
+    fig.savefig(f"./reports/figures/{sym}.png", dpi=300, bbox_inches="tight")
+    plt.show()
+    plt.close(fig)
 
 def download_ticker(symbol, prd, intvl):
     data = yf.download(symbol, interval=intvl, period=prd,progress=False)
